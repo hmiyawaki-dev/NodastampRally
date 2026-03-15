@@ -5,93 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nodaクエスト - スタンプラリー</title>
     <style>
-        :root { --primary-color: #e60012; --bg-color: #f4f4f4; }
-        body { font-family: sans-serif; text-align: center; background-color: var(--bg-color); margin: 0; padding: 20px; }
+        :root { --primary-color: #e60012; --bg-color: #f4f4f4; --success-color: #28a745; }
+        body { font-family: sans-serif; text-align: center; background-color: var(--bg-color); margin: 0; padding: 20px; color: #333; }
         
-/* スタンプ台のデザイン修正 */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 横2列 */
-    grid-template-rows: repeat(3, 1fr);    /* 縦3段（比率で制御） */
-    gap: 0;                               /* 隙間を完全にゼロに！ */
-    max-width: 300px;                      /* 画像の横幅に合わせる */
-    aspect-ratio: 2 / 3;                   /* 縦横比をイラスト(2:3)に固定 */
-    margin: 20px auto;
-    border: 5px solid #333;                /* 外枠だけ太くして額縁風に */
-    background: #eee;
-    overflow: hidden;
-}
+        /* スタンプ台のデザイン */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 0;
+            max-width: 300px;
+            aspect-ratio: 2 / 3;
+            margin: 20px auto;
+            border: 5px solid #333;
+            background: #eee;
+            overflow: hidden;
+        }
 
-.stamp-slot {
-    background-color: #ccc;               /* 未獲得時のパネルの色 */
-    border: 0.5px solid #bbb;             /* パネルの区切り線（薄く） */
-    box-sizing: border-box;               /* ボーダーを内側に含める */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #888;
-    background-size: 300px 450px;         /* 画像全体のサイズ */
-}
+        .stamp-slot {
+            background-color: #ccc;
+            border: 0.5px solid #bbb;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #888;
+            background-size: 300px 450px;
+        }
 
-/* 正解した時のスタンプ表示 */
-.stamp-slot.cleared {
-    background-color: transparent;        /* 背景色を透明にして画像を見せる */
-    background-image: url('character.png');
-    color: transparent;                   /* 数字を消す */
-    border: none;                         /* 完成時は境界線を消す */
-}
-        /* 景品表示エリア */
-        #reward-status { margin-top: 20px; padding: 15px; border-radius: 10px; background: white; font-weight: bold; }
+        .stamp-slot.cleared {
+            background-color: transparent;
+            background-image: url('character.png'); /* 画像ファイル名を確認してください */
+            color: transparent;
+            border: none;
+        }
 
-        /* クイズ用モーダル（重ね合わせ） */
+        /* 景品リストエリア */
+        .prize-section {
+            max-width: 340px;
+            margin: 30px auto;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .prize-section h2 { font-size: 18px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 0; }
+        
+        .prize-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .prize-item:last-child { border-bottom: none; }
+        
+        .prize-info { flex-grow: 1; }
+        .prize-name { font-weight: bold; font-size: 15px; display: block; }
+        .prize-requirement { font-size: 12px; color: #666; }
+
+        /* ボタンのデザイン */
+        .exchange-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-locked { background-color: #ccc; color: #fff; cursor: not-allowed; }
+        .btn-ready { background-color: var(--primary-color); color: #fff; }
+        .btn-done { background-color: #666; color: #fff; cursor: default; }
+
+        /* クイズ用モーダル */
         #quiz-overlay {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.8); color: white; padding-top: 50px;
+            background: rgba(0,0,0,0.85); color: white; padding-top: 50px; z-index: 1000;
         }
         .quiz-card { background: white; color: black; width: 85%; margin: auto; padding: 20px; border-radius: 15px; }
-        button { padding: 10px 20px; margin: 10px; cursor: pointer; border-radius: 5px; border: none; background: #eee; }
-        button.ans-btn { width: 100%; display: block; background: var(--primary-color); color: white; font-size: 16px; }
+        .ans-btn { width: 100%; display: block; background: var(--primary-color); color: white; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <h1>Nodaクエスト</h1>
-    <p>クイズに答えてイラストを完成させよう！</p>
+    
+    <div class="grid-container" id="stamp-grid"></div>
 
-    <div class="grid-container" id="stamp-grid">
-        </div>
-
-    <div id="reward-status"></div>
-
-    <div id="quiz-overlay">
-        <div class="quiz-card" id="quiz-content">
+    <div class="prize-section">
+        <h2>🎁 景品一覧</h2>
+        <div id="prize-list">
             </div>
     </div>
 
+    <div id="quiz-overlay">
+        <div class="quiz-card" id="quiz-content"></div>
+    </div>
+
 <script>
-    // クイズデータ（CSVの内容を元に設定）
+    // クイズデータ
     const quizData = {
         1: { q: "神戸野田高校は令和８年で創立何周年？", opts: ["A 50年", "B 90年", "C 100年"], ans: "C" },
         2: { q: "ルーヴル美術館がある国はどこでしょう？", opts: ["A アメリカ", "B フランス", "C イタリア"], ans: "B" },
         3: { q: "JR鷹取駅には100年間、何がありましたか？", opts: ["A 駅員宿舎", "B 荷物倉庫", "C 鉄道車両倉庫"], ans: "C" },
         4: { q: "華道部の展示にある、校内に咲いた花は？", opts: ["A 紫陽花", "B チューリップ", "C スイートピー"], ans: "A" },
         5: { q: "将棋の駒の形は、何角形？", opts: ["A 四角形", "B 五角形", "C 六角形"], ans: "B" },
-        6: { q: "コーラス部の演奏に参加しましたか？", opts: ["参加した！"], ans: "参加した！" } // Q6は参加のみ
+        6: { q: "コーラス部の演奏に参加しましたか？", opts: ["参加した！"], ans: "参加した！" }
     };
 
-    // 背景画像の位置設定 (横2×縦3を1枚の画像で表現)
-    const positions = [
-        "0% 0%", "100% 0%",
-        "0% 50%", "100% 50%",
-        "0% 100%", "100% 100%"
+    // 景品データ
+    const prizeSettings = [
+        { id: 'prize4', count: 4, name: "クリアファイル" },
+        { id: 'prize5', count: 5, name: "付箋（ふせん）" },
+        { id: 'prize6', count: 6, name: "シャープペンシル" }
     ];
 
-    // ローカルストレージから進捗読み込み
-    let progress = JSON.parse(localStorage.getItem('noda_stamps')) || {};
+    const positions = ["0% 0%", "100% 0%", "0% 50%", "100% 50%", "0% 100%", "100% 100%"];
 
-    // スタンプ台を描画
+    // データの読み込み
+    let progress = JSON.parse(localStorage.getItem('noda_stamps')) || {};
+    let exchangedPrizes = JSON.parse(localStorage.getItem('noda_prizes')) || {};
+
+    // 描画：スタンプ台
     function renderGrid() {
         const grid = document.getElementById('stamp-grid');
         grid.innerHTML = '';
@@ -102,65 +142,80 @@
             slot.innerText = i;
             grid.appendChild(slot);
         }
-        updateReward();
     }
 
-    // 景品メッセージの更新
-    function updateReward() {
-        const clearCount = Object.keys(progress).length;
-        const rewardEl = document.getElementById('reward-status');
-        if (clearCount === 6) {
-            rewardEl.innerHTML = "🎉 コンプリート！🎉<br>窓口でこの画面を見せて「豪華景品」をもらってね！";
-            rewardEl.style.color = "red";
-        } else if (clearCount >= 3) {
-            rewardEl.innerHTML = `現在 ${clearCount} 個！<br>3個以上の景品「ステッカー」対象です！`;
-        } else {
-            rewardEl.innerHTML = `あと ${6 - clearCount} 個で完成！`;
+    // 描画：景品リスト
+    function renderPrizes() {
+        const listEl = document.getElementById('prize-list');
+        const currentCount = Object.keys(progress).length;
+        listEl.innerHTML = '';
+
+        prizeSettings.forEach(prize => {
+            const isExchanged = exchangedPrizes[prize.id];
+            const isReady = currentCount >= prize.count;
+
+            let btnHtml = '';
+            if (isExchanged) {
+                btnHtml = `<button class="exchange-btn btn-done" disabled>交換済み</button>`;
+            } else if (isReady) {
+                btnHtml = `<button class="exchange-btn btn-ready" onclick="claimPrize('${prize.id}', '${prize.name}')">交換する</button>`;
+            } else {
+                btnHtml = `<button class="exchange-btn btn-locked" disabled>あと ${prize.count - currentCount} つ</button>`;
+            }
+
+            listEl.innerHTML += `
+                <div class="prize-item">
+                    <div class="prize-info">
+                        <span class="prize-name">${prize.name}</span>
+                        <span class="prize-requirement">正解数：${prize.count}つ以上（現在：${currentCount}）</span>
+                    </div>
+                    ${btnHtml}
+                </div>
+            `;
+        });
+    }
+
+    // 景品交換処理
+    window.claimPrize = function(id, name) {
+        const confirmed = window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（スタッフに画面を見せてから押してください）`);
+        
+        if (confirmed) {
+            exchangedPrizes[id] = true;
+            localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
+            renderPrizes(); // 画面を更新
+            alert(`${name} の交換を記録しました！`);
         }
-    }
+    };
 
-    // クイズを表示
+    // クイズ表示・判定ロジック（前回と同様）
     function showQuiz(id) {
         const quiz = quizData[id];
         if (!quiz) return;
-        
-        const overlay = document.getElementById('quiz-overlay');
-        const content = document.getElementById('quiz-content');
-        
-        let buttons = quiz.opts.map(opt => 
-            `<button class="ans-btn" onclick="checkAnswer(${id}, '${opt[0]}')">${opt}</button>`
-        ).join('');
-
-        // Q6のようなボタン1つの場合
-        if(id == 6) {
-            buttons = `<button class="ans-btn" onclick="checkAnswer(6, '参加した！')">参加しました！</button>`;
-        }
-
-        content.innerHTML = `<h3>問題 ${id}</h3><p>${quiz.q}</p>${buttons}`;
-        overlay.style.display = 'block';
+        document.getElementById('quiz-overlay').style.display = 'block';
+        let buttons = quiz.opts.map(opt => `<button class="ans-btn" onclick="checkAnswer(${id}, '${opt[0]}')">${opt}</button>`).join('');
+        if(id == 6) buttons = `<button class="ans-btn" onclick="checkAnswer(6, '参加した！')">参加しました！</button>`;
+        document.getElementById('quiz-content').innerHTML = `<h3>問題 ${id}</h3><p>${quiz.q}</p>${buttons}`;
     }
 
-    // 正誤判定
     window.checkAnswer = function(id, choice) {
         const quiz = quizData[id];
         if (choice === quiz.ans || id == 6) {
             alert("正解！スタンプをGETしました！");
             progress[id] = true;
             localStorage.setItem('noda_stamps', JSON.stringify(progress));
-            location.href = location.pathname; // リロードしてトップへ
+            location.href = location.origin + location.pathname; // パラメータを消してリロード
         } else {
             alert("ざんねん！もう一度考えてみてね。");
         }
     };
 
-    // URLパラメータ (?q=1など) をチェック
+    // 初期化
     const urlParams = new URLSearchParams(window.location.search);
-    const quizId = urlParams.get('q');
-    if (quizId) {
-        showQuiz(quizId);
-    }
+    const qId = urlParams.get('q');
+    if (qId) showQuiz(qId);
 
     renderGrid();
+    renderPrizes();
 </script>
 </body>
 </html>
