@@ -6,7 +6,32 @@
     <title>Nodaクエスト - スタンプラリー</title>
     <style>
         :root { --primary-color: #e60012; --bg-color: #f4f4f4; --success-color: #28a745; }
-        body { font-family: sans-serif; text-align: center; background-color: var(--bg-color); margin: 0; padding: 20px; color: #333; }
+      body {
+    font-family: sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+    
+    /* --- 背景イラストの設定 --- */
+    background-image: url('haikei.png'); /* 背景用の画像ファイル名 */
+    background-size: cover;               /* 画面全体を覆う */
+    background-position: center;          /* 中央合わせ */
+    background-attachment: fixed;         /* スクロールしても背景を動かさない（高級感が出ます） */
+    background-repeat: no-repeat;
+}
+
+/* 背景が濃い場合に備えて、各セクションを少し透けた白背景にする */
+.prize-section, .quiz-card {
+    background: rgba(255, 255, 255, 0.9) !important; /* 透明度90%の白 */
+    backdrop-filter: blur(5px);                      /* 背景を少しぼかす（モダンなデザイン） */
+}
+
+/* スタンプ台も背景から浮き出るように調整 */
+.grid-container {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
         
         /* スタンプ台のデザイン */
         .grid-container {
