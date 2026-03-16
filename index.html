@@ -37,7 +37,7 @@
 
         .stamp-slot.cleared {
             background-color: transparent;
-            background-image: url('character.png'); /* 画像ファイル名を確認してください */
+            background-image: url('character.png'); /* 画像ファイル名 */
             color: transparent;
             border: none;
         }
@@ -55,11 +55,8 @@
         .prize-section h2 { font-size: 18px; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-top: 0; }
         
         .prize-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid #eee;
         }
         .prize-item:last-child { border-bottom: none; }
         
@@ -67,20 +64,17 @@
         .prize-name { font-weight: bold; font-size: 15px; display: block; }
         .prize-requirement { font-size: 12px; color: #666; }
 
-        /* ボタンのデザイン */
         .exchange-btn {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
+            padding: 8px 12px; border-radius: 6px; border: none; font-weight: bold;
+            font-size: 13px; cursor: pointer; white-space: nowrap;
         }
         .btn-locked { background-color: #ccc; color: #fff; cursor: not-allowed; }
         .btn-ready { background-color: var(--primary-color); color: #fff; }
         .btn-done { background-color: #666; color: #fff; cursor: default; }
+
+        /* リセットボタンのスタイル */
+        .admin-section { margin-top: 50px; padding-bottom: 30px; }
+        .reset-link { font-size: 12px; color: #999; text-decoration: underline; background: none; border: none; cursor: pointer; }
 
         /* クイズ用モーダル */
         #quiz-overlay {
@@ -99,8 +93,11 @@
 
     <div class="prize-section">
         <h2>🎁 景品一覧</h2>
-        <div id="prize-list">
-            </div>
+        <div id="prize-list"></div>
+    </div>
+
+    <div class="admin-section">
+        <button class="reset-link" onclick="manualReset()">データをリセットして最初から遊ぶ</button>
     </div>
 
     <div id="quiz-overlay">
@@ -108,17 +105,29 @@
     </div>
 
 <script>
-    // クイズデータ
+    // --- 1. 自動リセットロジック (方法2) ---
+    const RESET_INTERVAL = 3 * 24 * 60 * 60 * 1000; // 3日間（ミリ秒）
+    const now = Date.now();
+    const lastAccess = localStorage.getItem('noda_last_access');
+
+    if (lastAccess && (now - parseInt(lastAccess) > RESET_INTERVAL)) {
+        localStorage.removeItem('noda_stamps');
+        localStorage.removeItem('noda_prizes');
+        alert("前回のイベントから時間が経過したため、データをリセットしました。");
+    }
+    localStorage.setItem('noda_last_access', now.toString());
+
+
+    // --- 2. データ定義 ---
     const quizData = {
         1: { q: "神戸野田高校は令和８年で創立何周年？", opts: ["A 50年", "B 90年", "C 100年"], ans: "C" },
         2: { q: "ルーヴル美術館がある国はどこでしょう？", opts: ["A アメリカ", "B フランス", "C イタリア"], ans: "B" },
         3: { q: "JR鷹取駅には100年間、何がありましたか？", opts: ["A 駅員宿舎", "B 荷物倉庫", "C 鉄道車両倉庫"], ans: "C" },
-        4: { q: "華道部の展示にある、校内に咲いた花は？", opts: ["A 紫陽花", "B チューリップ", "C スイートピー"], ans: "A" },
+        4: { q: "華道部の展示にある、校内に咲いた花は？", opts: ["A 紫陽花（あじさい）", "B チューリップ", "C スイートピー"], ans: "A" },
         5: { q: "将棋の駒の形は、何角形？", opts: ["A 四角形", "B 五角形", "C 六角形"], ans: "B" },
         6: { q: "コーラス部の演奏に参加しましたか？", opts: ["参加した！"], ans: "参加した！" }
     };
 
-    // 景品データ
     const prizeSettings = [
         { id: 'prize4', count: 4, name: "クリアファイル" },
         { id: 'prize5', count: 5, name: "付箋（ふせん）" },
@@ -127,11 +136,11 @@
 
     const positions = ["0% 0%", "100% 0%", "0% 50%", "100% 50%", "0% 100%", "100% 100%"];
 
-    // データの読み込み
     let progress = JSON.parse(localStorage.getItem('noda_stamps')) || {};
     let exchangedPrizes = JSON.parse(localStorage.getItem('noda_prizes')) || {};
 
-    // 描画：スタンプ台
+    // --- 3. 描画・操作関数 ---
+
     function renderGrid() {
         const grid = document.getElementById('stamp-grid');
         grid.innerHTML = '';
@@ -144,7 +153,6 @@
         }
     }
 
-    // 描画：景品リスト
     function renderPrizes() {
         const listEl = document.getElementById('prize-list');
         const currentCount = Object.keys(progress).length;
@@ -175,19 +183,24 @@
         });
     }
 
-    // 景品交換処理
     window.claimPrize = function(id, name) {
-        const confirmed = window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（スタッフに画面を見せてから押してください）`);
-        
-        if (confirmed) {
+        if (window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（スタッフに画面を見せてから押してください）`)) {
             exchangedPrizes[id] = true;
             localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
-            renderPrizes(); // 画面を更新
+            renderPrizes();
             alert(`${name} の交換を記録しました！`);
         }
     };
 
-    // クイズ表示・判定ロジック（前回と同様）
+    // 手動リセットボタンの処理
+    window.manualReset = function() {
+        if (window.confirm("これまでのスタンプと景品交換の記録をすべて消去します。よろしいですか？")) {
+            localStorage.clear();
+            alert("データをリセットしました。トップ画面に戻ります。");
+            location.href = location.origin + location.pathname;
+        }
+    };
+
     function showQuiz(id) {
         const quiz = quizData[id];
         if (!quiz) return;
@@ -203,13 +216,12 @@
             alert("正解！スタンプをGETしました！");
             progress[id] = true;
             localStorage.setItem('noda_stamps', JSON.stringify(progress));
-            location.href = location.origin + location.pathname; // パラメータを消してリロード
+            location.href = location.origin + location.pathname;
         } else {
             alert("ざんねん！もう一度考えてみてね。");
         }
     };
 
-    // 初期化
     const urlParams = new URLSearchParams(window.location.search);
     const qId = urlParams.get('q');
     if (qId) showQuiz(qId);
