@@ -184,7 +184,7 @@
     }
 
     window.claimPrize = function(id, name) {
-        if (window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（スタッフに画面を見せてから押してください）`)) {
+        if (window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（景品交換の際にスタッフに画面を見せてから押してください）`)) {
             exchangedPrizes[id] = true;
             localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
             renderPrizes();
