@@ -73,7 +73,7 @@
         .btn-done { background-color: #666; color: #fff; cursor: default; }
 
         /* リセットボタンのスタイル */
-        .admin-section { margin-top: 50px; padding-bottom: 30px; }
+        .admin-section { display: none;　margin-top: 50px; padding-bottom: 30px; }
         .reset-link { font-size: 12px; color: #999; text-decoration: underline; background: none; border: none; cursor: pointer; }
 
         /* クイズ用モーダル */
@@ -141,47 +141,81 @@
 
     // --- 3. 描画・操作関数 ---
 
-    function renderGrid() {
-        const grid = document.getElementById('stamp-grid');
-        grid.innerHTML = '';
-        for (let i = 1; i <= 6; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'stamp-slot' + (progress[i] ? ' cleared' : '');
-            slot.style.backgroundPosition = positions[i-1];
-            slot.innerText = i;
-            grid.appendChild(slot);
+// --- 3. 描画・操作関数（管理者用取り消し機能付き） ---
+
+function renderGrid() {
+    const grid = document.getElementById('stamp-grid');
+    grid.innerHTML = '';
+    const isAdmin = (urlParams.get('admin') === 'true');
+
+    for (let i = 1; i <= 6; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'stamp-slot' + (progress[i] ? ' cleared' : '');
+        slot.style.backgroundPosition = positions[i-1];
+        slot.innerText = i;
+
+        // 管理者モードなら、獲得済みスタンプを個別にリセットできる機能
+        if (isAdmin && progress[i]) {
+            slot.style.cursor = 'pointer';
+            slot.title = "このスタンプを取り消す";
+            slot.onclick = () => {
+                if(confirm(`スタンプ ${i} を未獲得に戻しますか？`)) {
+                    delete progress[i];
+                    localStorage.setItem('noda_stamps', JSON.stringify(progress));
+                    renderGrid();
+                    renderPrizes();
+                }
+            };
         }
+        grid.appendChild(slot);
     }
+}
 
-    function renderPrizes() {
-        const listEl = document.getElementById('prize-list');
-        const currentCount = Object.keys(progress).length;
-        listEl.innerHTML = '';
+function renderPrizes() {
+    const listEl = document.getElementById('prize-list');
+    const currentCount = Object.keys(progress).length;
+    const isAdmin = (urlParams.get('admin') === 'true');
+    listEl.innerHTML = '';
 
-        prizeSettings.forEach(prize => {
-            const isExchanged = exchangedPrizes[prize.id];
-            const isReady = currentCount >= prize.count;
+    prizeSettings.forEach(prize => {
+        const isExchanged = exchangedPrizes[prize.id];
+        const isReady = currentCount >= prize.count;
 
-            let btnHtml = '';
-            if (isExchanged) {
-                btnHtml = `<button class="exchange-btn btn-done" disabled>交換済み</button>`;
-            } else if (isReady) {
-                btnHtml = `<button class="exchange-btn btn-ready" onclick="claimPrize('${prize.id}', '${prize.name}')">交換する</button>`;
-            } else {
-                btnHtml = `<button class="exchange-btn btn-locked" disabled>あと ${prize.count - currentCount} つ</button>`;
+        let btnHtml = '';
+        if (isExchanged) {
+            // 交換済みの場合
+            btnHtml = `<button class="exchange-btn btn-done" disabled>交換済み</button>`;
+            // ★管理者モードなら「取り消し」ボタンを追加表示
+            if (isAdmin) {
+                btnHtml += `<button class="reset-link" style="margin-left:10px" onclick="undoPrize('${prize.id}', '${prize.name}')">【取消】</button>`;
             }
+        } else if (isReady) {
+            btnHtml = `<button class="exchange-btn btn-ready" onclick="claimPrize('${prize.id}', '${prize.name}')">交換する</button>`;
+        } else {
+            btnHtml = `<button class="exchange-btn btn-locked" disabled>あと ${prize.count - currentCount} つ</button>`;
+        }
 
-            listEl.innerHTML += `
-                <div class="prize-item">
-                    <div class="prize-info">
-                        <span class="prize-name">${prize.name}</span>
-                        <span class="prize-requirement">正解数：${prize.count}つ以上（現在：${currentCount}）</span>
-                    </div>
-                    ${btnHtml}
+        listEl.innerHTML += `
+            <div class="prize-item">
+                <div class="prize-info">
+                    <span class="prize-name">${prize.name}</span>
+                    <span class="prize-requirement">正解数：${prize.count}つ以上（現在：${currentCount}）</span>
                 </div>
-            `;
-        });
+                <div style="display:flex; align-items:center;">${btnHtml}</div>
+            </div>
+        `;
+    });
+}
+
+// ★景品交換の個別取り消し関数
+window.undoPrize = function(id, name) {
+    if (window.confirm(`「${name}」の交換記録を取り消し、未交換に戻しますか？`)) {
+        delete exchangedPrizes[id];
+        localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
+        renderPrizes();
+        alert("取り消しました。");
     }
+};
 
     window.claimPrize = function(id, name) {
         if (window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（景品交換の際にスタッフに画面を見せてから押してください）`)) {
@@ -228,6 +262,11 @@
 
     renderGrid();
     renderPrizes();
+    // --- 管理者モードの切り替え ---
+// URLに ?admin=true または &admin=true が入っている場合だけリセットボタンを表示
+if (urlParams.get('admin') === 'true') {
+    document.querySelector('.admin-section').style.display = 'block';
+}    
 </script>
 </body>
 </html>
