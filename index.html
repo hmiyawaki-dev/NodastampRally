@@ -122,12 +122,29 @@
     display: block;
     margin: 0 auto;
 }
+　　　　/* GIF表示エリアのスタイル */
+.gif-container {
+    max-width: 200px; /* GIFの大きさを調整（ロゴより少し小さめがおすすめ） */
+    margin: 0 auto 20px;
+}
+
+.gif-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px; /* 角を少し丸くすると柔らかい印象になります */
+}
     </style>
 </head>
+
 <body>
 
     <div class="logo-container">
     <img src="NODAQUE.png" alt="Nodaクエスト ロゴ">
+　　</div>
+    
+    <div class="gif-container">
+    <img src="top.gif" alt="演出用アニメーション">
 　　</div>
     
     <div class="grid-container" id="stamp-grid"></div>
