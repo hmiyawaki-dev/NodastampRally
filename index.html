@@ -171,7 +171,7 @@
     if (lastAccess && (now - parseInt(lastAccess) > RESET_INTERVAL)) {
         localStorage.removeItem('noda_stamps');
         localStorage.removeItem('noda_prizes');
-        alert("前回のイベントから時間が経過したため、データをリセットしました。");
+        alert("新しいスタンプラリーに更新しました。");
     }
     localStorage.setItem('noda_last_access', now.toString());
 
@@ -298,7 +298,7 @@ window.undoPrize = function(id, name) {
         if (!quiz) return;
         document.getElementById('quiz-overlay').style.display = 'block';
         let buttons = quiz.opts.map(opt => `<button class="ans-btn" onclick="checkAnswer(${id}, '${opt[0]}')">${opt}</button>`).join('');
-        if(id == 6) buttons = `<button class="ans-btn" onclick="checkAnswer(6, '参加した！')">参加しました！</button>`;
+        if(id == 10) buttons = `<button class="ans-btn" onclick="checkAnswer(10, '参加した！')">参加しました！</button>`;
         document.getElementById('quiz-content').innerHTML = `<h3>問題 ${id}</h3><p>${quiz.q}</p>${buttons}`;
     }
 
