@@ -304,7 +304,7 @@ window.undoPrize = function(id, name) {
 
     window.checkAnswer = function(id, choice) {
         const quiz = quizData[id];
-        if (choice === quiz.ans || id == 6) {
+        if (choice === quiz.ans || id == 7) {
             alert("正解！スタンプをGETしました！");
             progress[id] = true;
             localStorage.setItem('noda_stamps', JSON.stringify(progress));
