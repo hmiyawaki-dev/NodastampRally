@@ -6,32 +6,32 @@
     <title>Nodaクエスト - スタンプラリー</title>
     <style>
         :root { --primary-color: #e60012; --bg-color: #f4f4f4; --success-color: #28a745; }
-      body {
-    font-family: sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-    
-    /* --- 背景イラストの設定 --- */
-    background-image: url('haikei.png'); /* 背景用の画像ファイル名 */
-    background-size: cover;               /* 画面全体を覆う */
-    background-position: center;          /* 中央合わせ */
-    background-attachment: fixed;         /* スクロールしても背景を動かさない（高級感が出ます） */
-    background-repeat: no-repeat;
-}
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            
+            /* --- 背景イラストの設定 --- */
+            background-image: url('haikei.png'); /* 背景用の画像ファイル名 */
+            background-size: cover;               /* 画面全体を覆う */
+            background-position: center;          /* 中央合わせ */
+            background-attachment: fixed;         /* スクロールしても背景を動かさない（高級感が出ます） */
+            background-repeat: no-repeat;
+        }
 
-/* 背景が濃い場合に備えて、各セクションを少し透けた白背景にする */
-.prize-section, .quiz-card {
-    background: rgba(255, 255, 255, 0.9) !important; /* 透明度90%の白 */
-    backdrop-filter: blur(5px);                      /* 背景を少しぼかす（モダンなデザイン） */
-}
+        /* 背景が濃い場合に備えて、各セクションを少し透けた白背景にする */
+        .prize-section, .quiz-card {
+            background: rgba(255, 255, 255, 0.9) !important; /* 透明度90%の白 */
+            backdrop-filter: blur(5px);                      /* 背景を少しぼかす（モダンなデザイン） */
+        }
 
-/* スタンプ台も背景から浮き出るように調整 */
-.grid-container {
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-}
+        /* スタンプ台も背景から浮き出るように調整 */
+        .grid-container {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
         
         /* スタンプ台のデザイン */
         .grid-container {
@@ -98,7 +98,7 @@
         .btn-done { background-color: #666; color: #fff; cursor: default; }
 
         /* リセットボタンのスタイル */
-        .admin-section { display: none;　margin-top: 50px; padding-bottom: 30px; }
+        .admin-section { display: none; margin-top: 50px; padding-bottom: 30px; }
         .reset-link { font-size: 12px; color: #999; text-decoration: underline; background: none; border: none; cursor: pointer; }
 
         /* クイズ用モーダル */
@@ -110,42 +110,69 @@
         .ans-btn { width: 100%; display: block; background: var(--primary-color); color: white; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; font-size: 16px; }
 
         /* ロゴ表示エリアのスタイル */
-.logo-container {
-    max-width: 450px; /* ロゴの最大横幅 */
-    margin: 5px auto 10px;
-    padding: 0 10px;
-}
+        .logo-container {
+            max-width: 450px; /* ロゴの最大横幅 */
+            margin: 5px auto 10px;
+            padding: 0 10px;
+        }
 
-.logo-container img {
-    width: 100%;      /* 画面幅に合わせて伸縮 */
-    height: auto;     /* 比率を維持 */
-    display: block;
-    margin: 0 auto;
-}
-　　　　/* GIF表示エリアのスタイル */
-.gif-container {
-    max-width: 200px; /* GIFの大きさを調整（ロゴより少し小さめがおすすめ） */
-    margin: 0 auto 20px;
-}
+        .logo-container img {
+            width: 100%;      /* 画面幅に合わせて伸縮 */
+            height: auto;     /* 比率を維持 */
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* GIF表示エリアのスタイル */
+        .gif-container {
+            max-width: 200px; /* GIFの大きさを調整（ロゴより少し小さめがおすすめ） */
+            margin: 0 auto 10px;
+        }
 
-.gif-container img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 10px; /* 角を少し丸くすると柔らかい印象になります */
-}
+        .gif-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px; /* 角を少し丸くすると柔らかい印象になります */
+        }
+
+        /* ★追加：MAPボタンのスタイル */
+        .map-btn-container {
+            margin: 0 auto 20px;
+        }
+        .map-btn {
+            display: inline-block;
+            background-color: #0056b3; /* 青色で目立たせる */
+            color: #ffffff;
+            padding: 10px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .map-btn:hover {
+            background-color: #004494;
+            transform: scale(1.05); /* 押したときに少し大きくなる演出 */
+        }
     </style>
 </head>
 
 <body>
 
     <div class="logo-container">
-    <img src="NODAQUE.png" alt="Nodaクエスト ロゴ">
-　　</div>
+        <img src="NODAQUE.png" alt="Nodaクエスト ロゴ">
+    </div>
     
     <div class="gif-container">
-    <img src="openschool.gif" alt="演出用アニメーション">
-　　</div>
+        <img src="openschool.gif" alt="演出用アニメーション">
+    </div>
+    
+    <!-- ★追加：MAPボタン表示エリア -->
+    <div class="map-btn-container">
+        <a href="map.pdf" target="_blank" class="map-btn">🗺️ MAPを開く</a>
+    </div>
     
     <div class="grid-container" id="stamp-grid"></div>
 
@@ -199,81 +226,81 @@
 
     // --- 3. 描画・操作関数 ---
 
-// --- 3. 描画・操作関数（管理者用取り消し機能付き） ---
+    // --- 3. 描画・操作関数（管理者用取り消し機能付き） ---
 
-function renderGrid() {
-    const grid = document.getElementById('stamp-grid');
-    grid.innerHTML = '';
-    const isAdmin = (urlParams.get('admin') === 'true');
+    function renderGrid() {
+        const grid = document.getElementById('stamp-grid');
+        grid.innerHTML = '';
+        const isAdmin = (urlParams.get('admin') === 'true');
 
-    for (let i = 1; i <= 6; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'stamp-slot' + (progress[i] ? ' cleared' : '');
-        slot.style.backgroundPosition = positions[i-1];
-        slot.innerText = i;
+        for (let i = 1; i <= 6; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'stamp-slot' + (progress[i] ? ' cleared' : '');
+            slot.style.backgroundPosition = positions[i-1];
+            slot.innerText = i;
 
-        // 管理者モードなら、獲得済みスタンプを個別にリセットできる機能
-        if (isAdmin && progress[i]) {
-            slot.style.cursor = 'pointer';
-            slot.title = "このスタンプを取り消す";
-            slot.onclick = () => {
-                if(confirm(`スタンプ ${i} を未獲得に戻しますか？`)) {
-                    delete progress[i];
-                    localStorage.setItem('noda_stamps', JSON.stringify(progress));
-                    renderGrid();
-                    renderPrizes();
-                }
-            };
-        }
-        grid.appendChild(slot);
-    }
-}
-
-function renderPrizes() {
-    const listEl = document.getElementById('prize-list');
-    const currentCount = Object.keys(progress).length;
-    const isAdmin = (urlParams.get('admin') === 'true');
-    listEl.innerHTML = '';
-
-    prizeSettings.forEach(prize => {
-        const isExchanged = exchangedPrizes[prize.id];
-        const isReady = currentCount >= prize.count;
-
-        let btnHtml = '';
-        if (isExchanged) {
-            // 交換済みの場合
-            btnHtml = `<button class="exchange-btn btn-done" disabled>交換済み</button>`;
-            // ★管理者モードなら「取り消し」ボタンを追加表示
-            if (isAdmin) {
-                btnHtml += `<button class="reset-link" style="margin-left:10px" onclick="undoPrize('${prize.id}', '${prize.name}')">【取消】</button>`;
+            // 管理者モードなら、獲得済みスタンプを個別にリセットできる機能
+            if (isAdmin && progress[i]) {
+                slot.style.cursor = 'pointer';
+                slot.title = "このスタンプを取り消す";
+                slot.onclick = () => {
+                    if(confirm(`スタンプ ${i} を未獲得に戻しますか？`)) {
+                        delete progress[i];
+                        localStorage.setItem('noda_stamps', JSON.stringify(progress));
+                        renderGrid();
+                        renderPrizes();
+                    }
+                };
             }
-        } else if (isReady) {
-            btnHtml = `<button class="exchange-btn btn-ready" onclick="claimPrize('${prize.id}', '${prize.name}')">交換する</button>`;
-        } else {
-            btnHtml = `<button class="exchange-btn btn-locked" disabled>あと ${prize.count - currentCount} つ</button>`;
+            grid.appendChild(slot);
         }
-
-        listEl.innerHTML += `
-            <div class="prize-item">
-                <div class="prize-info">
-                    <span class="prize-name">${prize.name}</span>
-                    <span class="prize-requirement">正解数：${prize.count}つ以上（現在：${currentCount}）</span>
-                </div>
-                <div style="display:flex; align-items:center;">${btnHtml}</div>
-            </div>
-        `;
-    });
-}
-
-// ★景品交換の個別取り消し関数
-window.undoPrize = function(id, name) {
-    if (window.confirm(`「${name}」の交換記録を取り消し、未交換に戻しますか？`)) {
-        delete exchangedPrizes[id];
-        localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
-        renderPrizes();
-        alert("取り消しました。");
     }
-};
+
+    function renderPrizes() {
+        const listEl = document.getElementById('prize-list');
+        const currentCount = Object.keys(progress).length;
+        const isAdmin = (urlParams.get('admin') === 'true');
+        listEl.innerHTML = '';
+
+        prizeSettings.forEach(prize => {
+            const isExchanged = exchangedPrizes[prize.id];
+            const isReady = currentCount >= prize.count;
+
+            let btnHtml = '';
+            if (isExchanged) {
+                // 交換済みの場合
+                btnHtml = `<button class="exchange-btn btn-done" disabled>交換済み</button>`;
+                // ★管理者モードなら「取り消し」ボタンを追加表示
+                if (isAdmin) {
+                    btnHtml += `<button class="reset-link" style="margin-left:10px" onclick="undoPrize('${prize.id}', '${prize.name}')">【取消】</button>`;
+                }
+            } else if (isReady) {
+                btnHtml = `<button class="exchange-btn btn-ready" onclick="claimPrize('${prize.id}', '${prize.name}')">交換する</button>`;
+            } else {
+                btnHtml = `<button class="exchange-btn btn-locked" disabled>あと ${prize.count - currentCount} つ</button>`;
+            }
+
+            listEl.innerHTML += `
+                <div class="prize-item">
+                    <div class="prize-info">
+                        <span class="prize-name">${prize.name}</span>
+                        <span class="prize-requirement">正解数：${prize.count}つ以上（現在：${currentCount}）</span>
+                    </div>
+                    <div style="display:flex; align-items:center;">${btnHtml}</div>
+                </div>
+            `;
+        });
+    }
+
+    // ★景品交換の個別取り消し関数
+    window.undoPrize = function(id, name) {
+        if (window.confirm(`「${name}」の交換記録を取り消し、未交換に戻しますか？`)) {
+            delete exchangedPrizes[id];
+            localStorage.setItem('noda_prizes', JSON.stringify(exchangedPrizes));
+            renderPrizes();
+            alert("取り消しました。");
+        }
+    };
 
     window.claimPrize = function(id, name) {
         if (window.confirm(`「${name}」を交換済に変更します。よろしいですか？\n（景品交換の際にスタッフに画面を見せてから押してください）`)) {
@@ -320,11 +347,12 @@ window.undoPrize = function(id, name) {
 
     renderGrid();
     renderPrizes();
+    
     // --- 管理者モードの切り替え ---
-// URLに ?admin=true または &admin=true が入っている場合だけリセットボタンを表示
-if (urlParams.get('admin') === 'true') {
-    document.querySelector('.admin-section').style.display = 'block';
-}    
+    // URLに ?admin=true または &admin=true が入っている場合だけリセットボタンを表示
+    if (urlParams.get('admin') === 'true') {
+        document.querySelector('.admin-section').style.display = 'block';
+    }    
 </script>
 </body>
 </html>
